@@ -93,6 +93,7 @@
             <el-col :span="24">
                 <el-input round autofocus @change="changeInput" clearable v-model:value="code" maxlength="5"
                           :disabled="inputDisable" placeholder="请输入五位取件码">
+                    {{code}}
                 </el-input>
             </el-col>
             <el-col :span=8>
@@ -424,6 +425,7 @@
             getFile: function () {
                 const that = this;
                 this.http('post', `?code=${that.code}`).then(res => {
+
                     that.quDrawer = true;
                     that.quFiles.unshift(res.data);
                 })

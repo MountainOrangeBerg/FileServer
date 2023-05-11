@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>文件快递柜</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+
+        /* Header styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            height: 50px;
+            background-color: #3385ff;
+            color: #fff;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin: 0;
+        }
+
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header a:before {
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background-color: #fff;
+            border-radius: 50px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .header a:hover:before {
+            opacity: 1;
+        }
+
+        /* Container styles */
+        .container {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+
+        input[type="text"] {
+            padding: 10px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 16px;
+            width: 70%;
+            margin-right: 10px;
+            outline: none;
+        }
+
+        button.primary-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #3385ff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.primary-btn:hover {
+            background-color: #2366d1;
+        }
+
+        /* Keypad styles */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+
+        .key {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: #f2f2f2;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 70px;
+            height: 70px;
+            border: none;
+            outline: none;
+        }
+
+        .key:hover {
+            background-color: #d9d9d9;
+        }
+
+        .key:last-child {
+            visibility: hidden;
+        }
+
+        .key:focus {
+            box-shadow: 0 0 0 2px #3385ff;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+<div class="header">
+    <h1>文件快递柜</h1>
+    <a href="#">登录</a>
+</div>
+<div class="container">
+    <input type="text" placeholder="请输入文件编号" id="code-input">
+    <button class="primary-btn" id="submit-btn">获取</button>
+    <div class="square">
+        <div class="keypad" id="keypad">
+            <div class="key" data-value="1">1</div>
+            <div class="key" data-value="2">2</div>
+            <div class="key" data-value="3">3</div>
+            <div class="key" data-value="4">4</div>
+            <div class="key" data-value="5">5</div>
+            <div class="key" data-value="6">6</div>
+            <div class="key" data-value="7">7</div>
+            <div class="key" data-value="8">8</div>
+            <div class="key" data-value="9">9</div>
+            <div class="key key-delete">del</div>
+            <div class="key" data-value="0">0</div>
+            <div class="key">clear</div>
+            <div class="key">nothing</div>
+        </div>
+    </div>
+</div>
+<script>
+    const codeInput = document.getElementById('code-input');
+    const keypad = document.getElementById('keypad');
+    const keys = keypad.querySelectorAll('.key');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // Add event listeners to the keypad keys
+    keys.forEach(key => {
+        key.addEventListener('click', () => {
+            if (key.dataset.value) {
+                codeInput.value += key.dataset.value;
+            }
+        });
+    });
+
+    // Add event listener to the submit button
+    submitBtn.addEventListener('click', () => {
+        // Code to submit the form goes here
+        alert('Form submitted!');
+    });
+</script>
+</body>
+
