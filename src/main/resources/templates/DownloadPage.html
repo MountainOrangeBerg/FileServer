@@ -1,16 +1,15 @@
 ﻿<!DOCTYPE html>
-<html>
-<head>
-    <title>文件快递柜</title>
+<html lang="en">
+<head><title>文件快递柜</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Global styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
             margin: 0;
         }
 
-        /* Header styles */
         .header {
             display: flex;
             justify-content: space-between;
@@ -26,15 +25,17 @@
             margin: 0;
         }
 
-        .header a {
+        .header button {
             color: #fff;
-            text-decoration: none;
+            background-color: transparent;
+            border: none;
             font-size: 16px;
             position: relative;
             z-index: 1;
+            cursor: pointer;
         }
 
-        .header a:before {
+        .header button:before {
             content: "";
             position: absolute;
             top: -5px;
@@ -48,11 +49,41 @@
             z-index: -1;
         }
 
-        .header a:hover:before {
+        .header button:hover:before {
             opacity: 1;
         }
 
-        /* Container styles */
+        .primary-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #3385ff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            background-color: #2366d1;
+        }
+
+        input[type="text"] {
+            padding: 10px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 16px;
+            width: 70%;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3385ff;
+            box-shadow: 0 0 0 2px #3385ff;
+        }
+
+
         .container {
             background-color: #fff;
             border-radius: 5px;
@@ -65,36 +96,11 @@
             margin: 40px auto;
         }
 
-        input[type="text"] {
-            padding: 10px 15px;
-            border: 1px solid #d9d9d9;
-            border-radius: 20px;
-            font-size: 16px;
-            width: 70%;
-            margin-right: 10px;
-            outline: none;
-        }
 
-        button.primary-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            font-size: 16px;
-            background-color: #3385ff;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button.primary-btn:hover {
-            background-color: #2366d1;
-        }
-
-        /* Keypad styles */
         .keypad {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns:repeat(3, 1fr);
+            grid-template-rows:repeat(3, 1fr);
             grid-gap: 10px;
             margin-top: 20px;
         }
@@ -126,57 +132,156 @@
             box-shadow: 0 0 0 2px #3385ff;
         }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
 
-    </style>
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: #888;
+            cursor: pointer;
+        }
+
+        .login-form input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .login-form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #3385ff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background-color: #2366d1;
+        } </style>
+    <script src="/static/asserts/vue.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 
 </head>
 <body>
-
-<div class="header">
-    <h1>文件快递柜</h1>
-    <a href="#">登录</a>
-</div>
-<div class="container">
-    <input type="text" placeholder="请输入文件编号" id="code-input">
-    <button class="primary-btn" id="submit-btn">获取</button>
-    <div class="square">
-        <div class="keypad" id="keypad">
-            <div class="key" data-value="1">1</div>
-            <div class="key" data-value="2">2</div>
-            <div class="key" data-value="3">3</div>
-            <div class="key" data-value="4">4</div>
-            <div class="key" data-value="5">5</div>
-            <div class="key" data-value="6">6</div>
-            <div class="key" data-value="7">7</div>
-            <div class="key" data-value="8">8</div>
-            <div class="key" data-value="9">9</div>
-            <div class="key key-delete">del</div>
-            <div class="key" data-value="0">0</div>
-            <div class="key">clear</div>
-            <div class="key">nothing</div>
+<div id="app1">
+    <div class="header"><h1>文件快递柜</h1>
+        <button id="login-btn" >登录</button>
+    </div>
+    <div class="container">
+        <input type="text" v-model="code" placeholder="请输入文件编号" maxlength="5">
+        <button class="primary-btn" id="submit-btn">获取</button>
+        <div class="square">
+            <div class="keypad" id="keypad">
+                <div class="key" @click="listenInput('1')">1</div>
+                <div class="key" @click="listenInput('2')">2</div>
+                <div class="key" @click="listenInput('3')">3</div>
+                <div class="key" @click="listenInput('4')">4</div>
+                <div class="key" @click="listenInput('5')">5</div>
+                <div class="key" @click="listenInput('6')">6</div>
+                <div class="key" @click="listenInput('7')">7</div>
+                <div class="key" @click="listenInput('8')">8</div>
+                <div class="key" @click="listenInput('9')">9</div>
+                <div class="key" @click="listenInput('del')">del</div>
+                <div class="key" @click="listenInput('0')">0</div>
+                <div class="key" @click="listenInput('clear')">clear</div>
+                <div class="key">nothing</div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <!-- 修改样式开始 -->
+            <span class="close" id="close">&times;</span>
+            <h2>登录</h2>
+            <!-- 修改样式结束 -->
+            <form id="login-form">
+                <!-- 修改样式开始 -->
+                <input type="text" id="username" placeholder="用户名" required style="margin-bottom: 10px;">
+                <input type="password" id="password" placeholder="密码" required style="margin-bottom: 10px;">
+                <!-- 修改样式结束 -->
+                <button type="submit">登录</button>
+            </form>
         </div>
     </div>
 </div>
 <script>
-    const codeInput = document.getElementById('code-input');
-    const keypad = document.getElementById('keypad');
-    const keys = keypad.querySelectorAll('.key');
-    const submitBtn = document.getElementById('submit-btn');
 
-    // Add event listeners to the keypad keys
-    keys.forEach(key => {
-        key.addEventListener('click', () => {
-            if (key.dataset.value) {
-                codeInput.value += key.dataset.value;
-            }
-        });
+    var modal = document.getElementById("modal");
+    var loginBtn = document.getElementById("login-btn");
+    var closeBtn = document.getElementById("close");
+    var loginForm = document.getElementById("login-form");
+
+    loginBtn.addEventListener("click", function () {
+        modal.style.display = "block";
     });
 
-    // Add event listener to the submit button
-    submitBtn.addEventListener('click', () => {
-        // Code to submit the form goes here
-        alert('Form submitted!');
+    closeBtn.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+        console.log('登录信息:', username, password);
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        modal.style.display = "none";
+    });
+
+
+    new Vue({
+        el: '#app1',
+        data() {
+            return {
+                code: '',
+            };
+        },
+        methods: {
+            listenInput(value) {
+                if (value === 'del') {
+                    if (this.code.length > 0) {
+                        this.code = this.code.slice(0, -1);
+                    }
+                } else if (value === 'clear') {
+                    this.code = '';
+                } else {
+                    this.code += value;
+                }
+            }
+        },
     });
 </script>
 </body>
-
+</html>
