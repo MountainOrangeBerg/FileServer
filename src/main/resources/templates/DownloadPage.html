@@ -7,6 +7,10 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
+            background-image: url('/static/banners/file.jpg');
+            background-size: 100% 100%; /* 将背景图像铺满整个背景区域 */
+            background-repeat: no-repeat;
+            background-position: center;
             margin: 0;
         }
 
@@ -16,7 +20,7 @@
             align-items: center;
             padding: 10px 20px;
             height: 50px;
-            background-color: #3385ff;
+            background-color: rgba(51, 133, 255, 0.7); /* 使用rgba颜色值设置背景颜色和透明度 */
             color: #fff;
         }
 
@@ -85,7 +89,7 @@
 
 
         .container {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.5); /* 使用rgba颜色值设置背景颜色和透明度 */
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
@@ -175,7 +179,17 @@
             font-size: 14px;
         }
 
-        .login-form button {
+        #password {
+            padding: 10px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 16px;
+            width: 70%;
+            margin: 10px 0;
+            outline: none;
+        }
+
+         #submit-login {
             padding: 10px 20px;
             border: none;
             border-radius: 20px;
@@ -186,10 +200,12 @@
             transition: background-color 0.3s ease;
         }
 
-        .login-form button:hover {
+        #submit-login:hover {
             background-color: #2366d1;
         } </style>
     <script src="/static/asserts/vue.min.js"></script>
+    <script src="/static/asserts/axios.min.js"></script>
+    <script src="/static/asserts/index.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
 
 </head>
@@ -200,7 +216,7 @@
     </div>
     <div class="container">
         <input type="text" v-model="code" placeholder="请输入文件编号" maxlength="5">
-        <button class="primary-btn" id="submit-btn">获取</button>
+        <button class="primary-btn" id="submit-btn" @click="getFile">获取</button>
         <div class="square">
             <div class="keypad" id="keypad">
                 <div class="key" @click="listenInput('1')">1</div>
@@ -230,35 +246,14 @@
                 <input type="text" id="username" placeholder="用户名" required style="margin-bottom: 10px;">
                 <input type="password" id="password" placeholder="密码" required style="margin-bottom: 10px;">
                 <!-- 修改样式结束 -->
-                <button type="submit">登录</button>
+                <button type="submit" id="submit-login">登录</button>
             </form>
         </div>
     </div>
 </div>
 <script>
 
-    var modal = document.getElementById("modal");
-    var loginBtn = document.getElementById("login-btn");
-    var closeBtn = document.getElementById("close");
-    var loginForm = document.getElementById("login-form");
 
-    loginBtn.addEventListener("click", function () {
-        modal.style.display = "block";
-    });
-
-    closeBtn.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    loginForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
-        console.log('登录信息:', username, password);
-        document.getElementById("username").value = "";
-        document.getElementById("password").value = "";
-        modal.style.display = "none";
-    });
 
 
     new Vue({
@@ -279,8 +274,70 @@
                 } else {
                     this.code += value;
                 }
-            }
+            },
+            http: function (method, url, data = {}, config = {}) {
+                return new Promise((resolve, reject) => {
+                    axios({
+                        method: method,
+                        url: url,
+                        data: data,
+                        ...config
+                    }).then(res => {
+                        if (res.data.detail) {
+                            this.$message({
+                                message: res.data.detail,
+                                type: 'success'
+                            });
+                        }
+                        resolve(res.data)
+                    }).catch(err => {
+                        if (err.response.data.detail) {
+                            this.$message({
+                                message: err.response.data.detail,
+                                type: 'error'
+                            });
+                        }
+                        reject(err)
+                    })
+                })
+            },
+            getFile: function () {
+                const data = {'code':this.code};
+                const that = this;
+                this.http('post', `/getFile`,data).then(res => {
+                    this.$message({
+                        type: res.flag,
+                        message: res.detail
+                    });
+                })
+                that.code = '';
+            },
         },
+
+        mounted: function () {
+            var modal = document.getElementById("modal");
+            var loginBtn = document.getElementById("login-btn");
+            var closeBtn = document.getElementById("close");
+            var loginForm = document.getElementById("login-form");
+
+            loginBtn.addEventListener("click", function () {
+                modal.style.display = "block";
+            });
+
+            closeBtn.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+
+            loginForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                var username = document.getElementById("username").value;
+                var password = document.getElementById("password").value;
+                console.log('登录信息:', username, password);
+                document.getElementById("username").value = "";
+                document.getElementById("password").value = "";
+                modal.style.display = "none";
+            });
+        }
     });
 </script>
 </body>
