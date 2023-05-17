@@ -3,6 +3,15 @@
 <head><title>文件快递柜</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/asserts/file.png" type="image/x-icon"/>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="/static/asserts/vue.min.js"></script>
+    <script src="/static/asserts/axios.min.js"></script>
+    <script src="/static/asserts/index.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -202,11 +211,9 @@
 
         #submit-login:hover {
             background-color: #2366d1;
-        } </style>
-    <script src="/static/asserts/vue.min.js"></script>
-    <script src="/static/asserts/axios.min.js"></script>
-    <script src="/static/asserts/index.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        }
+    </style>
+
 
 </head>
 <body>
@@ -246,15 +253,12 @@
                 <input type="text" id="username" placeholder="用户名" required style="margin-bottom: 10px;">
                 <input type="password" id="password" placeholder="密码" required style="margin-bottom: 10px;">
                 <!-- 修改样式结束 -->
-                <button type="submit" id="submit-login">登录</button>
+                <button type="submit" id="submit-login" >登录</button>
             </form>
         </div>
     </div>
 </div>
 <script>
-
-
-
 
     new Vue({
         el: '#app1',
@@ -275,42 +279,27 @@
                     this.code += value;
                 }
             },
-            http: function (method, url, data = {}, config = {}) {
-                return new Promise((resolve, reject) => {
-                    axios({
-                        method: method,
-                        url: url,
-                        data: data,
-                        ...config
-                    }).then(res => {
-                        if (res.data.detail) {
-                            this.$message({
-                                message: res.data.detail,
-                                type: 'success'
-                            });
-                        }
-                        resolve(res.data)
-                    }).catch(err => {
-                        if (err.response.data.detail) {
-                            this.$message({
-                                message: err.response.data.detail,
-                                type: 'error'
-                            });
-                        }
-                        reject(err)
-                    })
-                })
-            },
             getFile: function () {
-                const data = {'code':this.code};
-                const that = this;
-                this.http('post', `/getFile`,data).then(res => {
-                    this.$message({
-                        type: res.flag,
-                        message: res.detail
+
+                axios.post('/getFile', { code: this.code })
+                    .then(response => {
+                        console.log(response.data);
+                        if(response.data.flag=='success'){
+                            this.$message.success(
+                                response.data.detail
+                            );
+                        }else{
+                            this.$message.error(
+                                response.data.detail
+                            );
+                        }
+                        // 处理响应数据
+                    })
+                    .catch(error => {
+                        this.$message.error('发生了一个错误');
                     });
-                })
-                that.code = '';
+
+                this.code = '';
             },
         },
 
@@ -333,6 +322,9 @@
                 var username = document.getElementById("username").value;
                 var password = document.getElementById("password").value;
                 console.log('登录信息:', username, password);
+
+
+
                 document.getElementById("username").value = "";
                 document.getElementById("password").value = "";
                 modal.style.display = "none";
