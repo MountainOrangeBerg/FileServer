@@ -24,12 +24,12 @@
         }
 
         .header {
-            display: flex;
+            /*display: flex;*/
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            height: 50px;
-            background-color: rgba(51, 133, 255, 0.7); /* 使用rgba颜色值设置背景颜色和透明度 */
+            /*height: 50px;*/
+            /*background-color: rgba(51, 133, 255, 0.7); !* 使用rgba颜色值设置背景颜色和透明度 *!*/
             color: #fff;
         }
 
@@ -178,27 +178,7 @@
             cursor: pointer;
         }
 
-        .login-form input {
-            display: block;
-            margin-bottom: 10px;
-            padding: 8px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        #password {
-            padding: 10px 15px;
-            border: 1px solid #d9d9d9;
-            border-radius: 20px;
-            font-size: 16px;
-            width: 70%;
-            margin: 10px 0;
-            outline: none;
-        }
-
-         #submit-login {
+        #submit-login {
             padding: 10px 20px;
             border: none;
             border-radius: 20px;
@@ -212,6 +192,41 @@
         #submit-login:hover {
             background-color: #2366d1;
         }
+
+        #login-form input{
+            padding: 10px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 16px;
+            width: 70%;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        #register-form input{
+            padding: 10px 15px;
+            border: 1px solid #d9d9d9;
+            border-radius: 20px;
+            font-size: 16px;
+            width: 70%;
+            margin: 10px 0;
+            outline: none;
+        }
+
+        #submit-register {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            background-color: #3385ff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #submit-register:hover {
+            background-color: #2366d1;
+        }
     </style>
 
 
@@ -219,7 +234,8 @@
 <body>
 <div id="app1">
     <div class="header"><h1>文件快递柜</h1>
-        <button id="login-btn" >登录</button>
+        <button id="register-btn">注册</button>
+        <button id="login-btn">登录</button>
     </div>
     <div class="container">
         <input type="text" v-model="code" placeholder="请输入文件编号" maxlength="5">
@@ -253,7 +269,24 @@
                 <input type="text" id="username" placeholder="用户名" required style="margin-bottom: 10px;">
                 <input type="password" id="password" placeholder="密码" required style="margin-bottom: 10px;">
                 <!-- 修改样式结束 -->
-                <button type="submit" id="submit-login" >登录</button>
+                <button type="submit" id="submit-login">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <!-- 修改样式开始 -->
+            <span class="close" id="registerClose">&times;</span>
+            <h2>注册</h2>
+            <!-- 修改样式结束 -->
+            <form id="register-form">
+                <!-- 修改样式开始 -->
+                <input type="text" id="registerUsername" placeholder="用户名" required style="margin-bottom: 10px;">
+                <input type="email" id="registerEmail" placeholder="邮箱" required style="margin-bottom: 10px;">
+                <input type="password" id="registerPassword" placeholder="密码" required style="margin-bottom: 10px;">
+                <!-- 修改样式结束 -->
+                <button type="submit" id="submit-register">注册</button>
             </form>
         </div>
     </div>
@@ -279,26 +312,29 @@
                     this.code += value;
                 }
             },
-            getFile: function () {
 
-                axios.post('/getFile', { code: this.code })
+            asyncHttpPost: function (api, body) {
+                 axios.post(api, {param: body})
                     .then(response => {
-                        console.log(response.data);
-                        if(response.data.flag=='success'){
+                        if (response.data.code == '200') {
                             this.$message.success(
-                                response.data.detail
+                                response.data.msg
                             );
-                        }else{
+                        } else {
                             this.$message.error(
-                                response.data.detail
+                                response.data.msg
                             );
                         }
                         // 处理响应数据
-                    })
-                    .catch(error => {
-                        this.$message.error('发生了一个错误');
+                    }).catch(error => {
+                        this.$message.error(
+                            error.data.msg
+                        );
                     });
+            },
 
+            getFile:  function () {
+                this.asyncHttpPost('/getFile', {code: this.code});
                 this.code = '';
             },
         },
@@ -324,9 +360,48 @@
                 console.log('登录信息:', username, password);
 
 
-
                 document.getElementById("username").value = "";
                 document.getElementById("password").value = "";
+                modal.style.display = "none";
+            });
+
+
+            var registerModal = document.getElementById("registerModal");
+            var registerBtn = document.getElementById("register-btn");
+            var registerCloseBtn = document.getElementById("registerClose");
+            var registerForm = document.getElementById("submit-register");
+
+            registerBtn.addEventListener("click", function () {
+                registerModal.style.display = "block";
+            });
+
+            registerCloseBtn.addEventListener("click", function () {
+                registerModal.style.display = "none";
+            });
+
+            registerForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                var username = document.getElementById("registerUsername").value;
+                var password = document.getElementById("registerPassword").value;
+                var email = document.getElementById("registerEmail").value;
+                console.log('注册信息:', username, password,email);
+                // this.
+                //1、创建xhr的对象
+                let xhr = new XMLHttpRequest()
+                //2、调用open函数('请求类型','url')
+                xhr.open('POST', '/register/createUser')
+                //3、设置 Content-Type属性（固定写法）
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+                //4、调用send函数
+                xhr.send({username:username,password:password,email:email})
+                //5、监听事件
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        console.log(xhr.responseText)
+                    }
+                }
+                document.getElementById("registerUsername").value = "";
+                document.getElementById("registerPassword").value = "";
                 modal.style.display = "none";
             });
         }

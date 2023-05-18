@@ -1,32 +1,32 @@
 package com.mountain.fileserver.pojo;
 
 public class User {
-    private long id;
+    private String id;
     private String username;
     private String password;
     private String nickname;
     private String avatarUrl;
-    private String gender;
-    private String constellation;
+    private int gender;
+    private int status;
 
     public User() {
     }
 
-    public User(long id, String username, String password, String nickname, String avatarUrl, String gender, String constellation) {
+    public User(String id, String username, String password, String nickname, String avatarUrl, int gender, int status) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.avatarUrl = avatarUrl;
         this.gender = gender;
-        this.constellation = constellation;
+        this.status = status;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -62,19 +62,19 @@ public class User {
         this.avatarUrl = avatarUrl;
     }
 
-    public String getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
-    public String getConstellation() {
-        return constellation;
+    public int getStatus() {
+        return status;
     }
 
-    public void setConstellation(String constellation) {
-        this.constellation = constellation;
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
